@@ -1,6 +1,6 @@
 package com.example.test6.presentation.main
 
-import android.widget.TextView
+import android.content.Context
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -20,36 +20,22 @@ import kotlinx.coroutines.launch
 class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::inflate) {
 
     private lateinit var adapter: MainFragmentRvAdapter
-    private lateinit var passcodeTextView: TextView
     private val viewModel: MainFragmentViewModel by viewModels()
-
-    override fun bindViewActionListener() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.passcodeState.collect { passcode ->
-                    if (passcode != "Success") {
-                        passcodeTextView.text = passcode
-                    }
-
-                    if (passcode == "Success") {
-                        Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-    }
 
     override fun setUp() {
         setUpRecyclerView()
     }
 
+    override fun bindViewActionListener() {
+        passCodeSetup()
+    }
+
     private fun setUpRecyclerView() {
-        passcodeTextView = binding.password
         adapter = MainFragmentRvAdapter { clickedData ->
             viewModel.handleButtonClick(clickedData)
         }
 
-        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+        binding.recyclerView.layoutManager = NonScrollableGridLayoutManager(requireContext(), 3)
         binding.recyclerView.adapter = adapter
 
         val numericButtons = listOf(
@@ -68,6 +54,37 @@ class MainFragment : BaseFragment<FragmentMainBinding>(FragmentMainBinding::infl
         )
 
         adapter.submitList(numericButtons)
+    }
+
+    class NonScrollableGridLayoutManager(context: Context, spanCount: Int) :
+        GridLayoutManager(context, spanCount) {
+
+        override fun canScrollVertically(): Boolean {
+            return false
+        }
+    }
+
+    private fun passCodeSetup() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.passcodeState.collect { state ->
+                    with(binding) {
+                        passCode.setText(state)
+
+                        if (state == "0934") {
+                            Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                            passCode.setText("")
+                            viewModel.resetPasscode()
+                        }
+
+                        if (state.length == 4 && state != "0934") {
+                            passCode.setText("")
+                            viewModel.resetPasscode()
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

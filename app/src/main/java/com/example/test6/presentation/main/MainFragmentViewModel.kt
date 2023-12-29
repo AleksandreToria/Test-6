@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainFragmentViewModel @Inject constructor() : ViewModel() {
 
-    private val _passcodeState = MutableStateFlow<String>("")
+    private val _passcodeState = MutableStateFlow("")
     val passcodeState: StateFlow<String> = _passcodeState.asStateFlow()
 
     fun handleButtonClick(clickedData: Data) {
@@ -20,10 +20,6 @@ class MainFragmentViewModel @Inject constructor() : ViewModel() {
             Type.NUMBER -> {
                 if (_passcodeState.value.length < 4) {
                     _passcodeState.value += clickedData.number
-
-                    if (_passcodeState.value.length == 4) {
-                        checkPasscode()
-                    }
                 }
             }
 
@@ -38,12 +34,7 @@ class MainFragmentViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun checkPasscode() {
-        val enteredPasscode = _passcodeState.value
-        if (enteredPasscode == "0934") {
-            _passcodeState.value = "Success"
-        } else {
-            _passcodeState.value = ""
-        }
+    fun resetPasscode() {
+        _passcodeState.value = ""
     }
 }

@@ -59,9 +59,8 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
-//    implementation ("online.devliving:passcodeview:1.0.3")
+    implementation("online.devliving:passcodeview:1.0.3")
 }
-
 kapt {
     correctErrorTypes = true
 }

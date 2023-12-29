@@ -13,42 +13,48 @@ import com.example.test6.databinding.ItemLayoutBinding
 class MainFragmentRvAdapter(private val onItemClick: (Data) -> Unit) :
     ListAdapter<Data, RecyclerView.ViewHolder>(DataDiffCallback()) {
 
-    private val VIEW_TYPE_NUMBER = 1
-    private val VIEW_TYPE_FINGERPRINT = 2
-    private val VIEW_TYPE_DELETE = 3
+    private val viewTypeNumber = 1
+    private val viewTypeFingerprint = 2
+    private val viewTypeDelete = 3
 
     class NumberViewHolder(private val binding: ItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Data, onItemClick: (Data) -> Unit) {
-            with(binding) {
+            with(binding.button) {
                 if (data.type == Type.NUMBER) {
-                    button.text = data.number.toString()
-                    button.setOnClickListener { onItemClick(data) }
+                    text = data.number.toString()
+                    setOnClickListener { onItemClick(data) }
                 } else {
-                    button.text = ""
-                    button.setOnClickListener(null)
+                    text = ""
+                    setOnClickListener(null)
                 }
             }
         }
     }
 
-    class FingerprintViewHolder(private val binding: ImageItemLayoutBinding) :
+    class ImageViewHolder(private val binding: ImageItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Data, onItemClick: (Data) -> Unit) {
             when (data.type) {
                 Type.FINGERPRINT -> {
-                    binding.imageButton.setImageResource(data.imageRes)
-                    binding.imageButton.setOnClickListener { onItemClick(data) }
+                    with(binding.imageButton) {
+                        setImageResource(data.imageRes)
+                        setOnClickListener { onItemClick(data) }
+                    }
                 }
 
                 Type.DELETE -> {
-                    binding.imageButton.setImageResource(data.imageRes)
-                    binding.imageButton.setOnClickListener { onItemClick(data) }
+                    with(binding.imageButton) {
+                        setImageResource(data.imageRes)
+                        setOnClickListener { onItemClick(data) }
+                    }
                 }
 
                 else -> {
-                    binding.imageButton.setImageResource(0)
-                    binding.imageButton.setOnClickListener(null)
+                    with(binding.imageButton) {
+                        setImageResource(0)
+                        setOnClickListener(null)
+                    }
                 }
             }
         }
@@ -69,19 +75,19 @@ class MainFragmentRvAdapter(private val onItemClick: (Data) -> Unit) :
         val inflater = LayoutInflater.from(parent.context)
 
         return when (viewType) {
-            VIEW_TYPE_NUMBER -> {
+            viewTypeNumber -> {
                 val binding = ItemLayoutBinding.inflate(inflater, parent, false)
                 NumberViewHolder(binding)
             }
 
-            VIEW_TYPE_FINGERPRINT -> {
+            viewTypeFingerprint -> {
                 val binding = ImageItemLayoutBinding.inflate(inflater, parent, false)
-                FingerprintViewHolder(binding)
+                ImageViewHolder(binding)
             }
 
-            VIEW_TYPE_DELETE -> {
+            viewTypeDelete -> {
                 val binding = ImageItemLayoutBinding.inflate(inflater, parent, false)
-                FingerprintViewHolder(binding)
+                ImageViewHolder(binding)
             }
 
             else -> throw IllegalArgumentException("Invalid view type")
@@ -93,16 +99,16 @@ class MainFragmentRvAdapter(private val onItemClick: (Data) -> Unit) :
         val currentItem = getItem(position)
         when (holder) {
             is NumberViewHolder -> holder.bind(currentItem, onItemClick)
-            is FingerprintViewHolder -> holder.bind(currentItem, onItemClick)
+            is ImageViewHolder -> holder.bind(currentItem, onItemClick)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val currentItem = getItem(position)
         return when (currentItem.type) {
-            Type.NUMBER -> VIEW_TYPE_NUMBER
-            Type.FINGERPRINT -> VIEW_TYPE_FINGERPRINT
-            Type.DELETE -> VIEW_TYPE_DELETE
+            Type.NUMBER -> viewTypeNumber
+            Type.FINGERPRINT -> viewTypeFingerprint
+            Type.DELETE -> viewTypeDelete
         }
     }
 }
